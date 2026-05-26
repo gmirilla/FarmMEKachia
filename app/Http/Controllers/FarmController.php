@@ -379,20 +379,24 @@ public function updatepicture(Request $request)
         Auth::check();
         $user = Auth::user();
 
-        $farms = farm::all();
-        $id = farm::where('farmcode', $request->fcode)->first()->id;
-        $farm = $farms->find($id);
+        $farm = farm::where('farmcode', $request->fcode)->first();
+
+        if (!$farm) {
+            return back()->withErrors(['fcode' => 'Farm not found.']);
+        }
 
         if ($request->hasFile('farmerpicture')) {
             $file = $request->file('farmerpicture');
             $filename = time() . '_' . $file->getClientOriginalName();
             $filePath = $file->storeAs('uploads/farmerpictures', $filename, 'public');
 
-            //get last entrance record
             $lastentrance = farmentrance::where('farmid', $farm->id)->latest()->first();
 
+            if (!$lastentrance) {
+                return back()->withErrors(['farmerpicture' => 'No entrance record found for this farm.']);
+            }
+
             $lastentrance->farmerpicture = $filePath;
-            
             $lastentrance->save();
         }
 
