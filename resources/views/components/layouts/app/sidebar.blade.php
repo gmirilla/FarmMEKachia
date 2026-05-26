@@ -51,8 +51,8 @@
 
     <style>
         .c-sidebar a {
-            color:#F5F0E6;
-            border-color: #5D4037;
+            color: #080808;
+            border-color:  #FFCA28;
             text-decoration:none
 
         }
@@ -72,7 +72,7 @@
         $user = Auth::user();
     @endphp
    <body class="min-h-screen bg-white dark:bg-zinc-800" style="background: url('{{Request::root()}}/assets/images/triangles.svg') repeat 0 100%, -webkit-gradient(linear, left top, right top, from(#f2eadc), to(#F5F0E6)) 0% 0% no-repeat padding-box">
-    <flux:sidebar sticky collapsible class="bg-zinc-50 dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-700" style="background-color:#5D4037 ; color: #f5f0e6">
+    <flux:sidebar sticky collapsible class="bg-zinc-50 dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-700" style="background-color: #826611 ; color: #f5f0e6">
         <flux:sidebar.header>
             <flux:sidebar.brand
                 href="#"
