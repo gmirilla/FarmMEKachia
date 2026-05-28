@@ -336,8 +336,8 @@
         <input type="text" name="farmentrance" hidden class="form-control" value="{{$farmentrance->id}}">
         <input type="text" name="internalinspectionid" hidden class="form-control" value="{{$farmentrance->internalinspectionid}}">
         <input type="text" name="farmid" hidden class="form-control" value="{{$farmerdetail->id}}">
-        <input type="text" name="reportid" hidden class="form-control" value="{{$report->id}}">
-        <button type="submt" class="btn btn-success">PROCEED</button>
+        <input type="text" name="reportid" hidden class="form-control" value="{{ $report ? $report->id : 'NULL' }}">
+        <button type="submit" class="btn btn-success">PROCEED</button>
         </form>
         <div class="ml-3"><a  href="{{route('feprofile', ['fcode' => $farmerdetail->farmcode])}}" class="btn btn-danger">Go Back</a></div>
     </div>
@@ -351,7 +351,7 @@
         <input type="text" name="inspectionid" hidden class="form-control" value="{{$farmentrance->internalinspectionid}}">
         <input type="text" name="farmid" hidden class="form-control" value="{{$farmerdetail->id}}">
         <input type="text" name="id" hidden class="form-control" value="{{$report->id}}">
-        <button type="submt" class="btn btn-success">PROCEED</button>
+        <button type="submit" class="btn btn-success">PROCEED</button>
         </form>
         <div class="ml-3"><a  href="{{route('feprofile', ['fcode' => $farmerdetail->farmcode])}}" class="btn btn-danger">Go Back</a></div>
     </div>
