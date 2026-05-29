@@ -68,7 +68,7 @@
                 <i class="fa fa-unlock"></i> Open Season
             </div>
             <div class="card-body">
-                <p class="text-muted small">Opens the current season: sets all farms to ACTIVE and sets the next inspection date.</p>
+                <p class="text-muted small">Opens the current season: sets all farms to ACTIVE, clears inspector assignments, and sets the next inspection date.</p>
                 <form action="{{ route('season.open') }}" method="POST"
                       onsubmit="return confirm('Open season {{ $currentSeasonString }}? This will set ALL farms to ACTIVE.');">
                     @csrf

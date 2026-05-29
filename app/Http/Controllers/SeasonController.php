@@ -36,9 +36,11 @@ class SeasonController extends Controller
             ])->save();
             farm::query()->update([
                 'farmstate'      => 'ACTIVE',
+                'inspectorid' => null,
                 'nextinspection' => $request->nextinspection_date,
             ]);
         });
+
 
         return redirect()->route('season.index')->with('success', "Season {$seasonString} opened.");
     }
