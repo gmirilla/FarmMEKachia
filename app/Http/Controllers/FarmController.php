@@ -33,11 +33,12 @@ class FarmController extends Controller
         
                 switch ($user->roles) {
                     case 'ADMINISTRATOR':
-                        $farmlist=farm::orderBy('farmcode')->get();
+                        $farmlist=farm::where('farmstate', '!=', 'DISABLED')
+                            ->orderBy('farmcode')->get();
                         break;
                     case 'INSPECTOR':
                         $farmlist=farm::where('inspectorid',$user->id)
-                            ->where('farmstate', '!=', 'CLOSED')
+                            ->whereNotIn('farmstate', ['CLOSED', 'DISABLED'])
                             ->orderBy('farmcode')
                             ->get();
                         break;
@@ -65,7 +66,8 @@ class FarmController extends Controller
         
                 switch ($user->roles) {
                     case 'ADMINISTRATOR':
-                        $farmlist=farm::orderByDesc('created_at')->get();
+                        $farmlist=farm::where('farmstate', '!=', 'DISABLED')
+                            ->orderByDesc('created_at')->get();
                         break;
                     case 'INSPECTOR':
                         $farmlist=Season::isOpen()
@@ -280,6 +282,11 @@ switch ($user->roles) {
         //Display Details of Farm
         $farmdetails = farm::where('farmcode', $request->id)->firstOrFail();
         $this->authorizeInspectorFarmAccess($farmdetails);
+
+        if ($farmdetails->farmstate === 'DISABLED' && $authuser->roles !== 'ADMINISTRATOR') {
+            abort(403, 'This farm is disabled.');
+        }
+
         $farms=farm::all();
         $id=$farmdetails->id;
         $EntranceReports = reports::whereRaw('LOWER(reportname) LIKE ?', ['%entrance%'])->get();
@@ -328,6 +335,45 @@ switch ($user->roles) {
 
 
         return view('viewfarm', compact('farm','farmreports', 'users', 'lastreport','authuser','farmerpicture','seasons','farmdetails'));
+    }
+
+    public function disabled()
+    {
+        Auth::check();
+        $user = Auth::user();
+
+        if ($user->roles !== 'ADMINISTRATOR') {
+            return redirect()->route('unauthorized');
+        }
+
+        $farmlist = farm::where('farmstate', 'DISABLED')
+            ->orderBy('community')
+            ->orderBy('farmcode')
+            ->get();
+
+        return view('admin.disabled_farms', compact('farmlist', 'user'));
+    }
+
+    public function reenable(Request $request)
+    {
+        Auth::check();
+        $user = Auth::user();
+
+        if ($user->roles !== 'ADMINISTRATOR') {
+            return redirect()->route('unauthorized');
+        }
+
+        $request->validate([
+            'farmid'   => 'required|exists:farms,id',
+            'newstate' => 'required|in:ACTIVE,PENDING',
+        ]);
+
+        farm::where('id', $request->farmid)
+            ->where('farmstate', 'DISABLED')
+            ->update(['farmstate' => $request->newstate]);
+
+        return redirect()->route('disabled.farms')
+            ->with('success', 'Farm re-enabled as ' . $request->newstate . '.');
     }
 
     public function importfarms(Request $request)
@@ -379,24 +425,20 @@ public function updatepicture(Request $request)
         Auth::check();
         $user = Auth::user();
 
-        $farm = farm::where('farmcode', $request->fcode)->first();
-
-        if (!$farm) {
-            return back()->withErrors(['fcode' => 'Farm not found.']);
-        }
+        $farms = farm::all();
+        $id = farm::where('farmcode', $request->fcode)->first()->id;
+        $farm = $farms->find($id);
 
         if ($request->hasFile('farmerpicture')) {
             $file = $request->file('farmerpicture');
             $filename = time() . '_' . $file->getClientOriginalName();
             $filePath = $file->storeAs('uploads/farmerpictures', $filename, 'public');
 
+            //get last entrance record
             $lastentrance = farmentrance::where('farmid', $farm->id)->latest()->first();
 
-            if (!$lastentrance) {
-                return back()->withErrors(['farmerpicture' => 'No entrance record found for this farm.']);
-            }
-
             $lastentrance->farmerpicture = $filePath;
+            
             $lastentrance->save();
         }
 

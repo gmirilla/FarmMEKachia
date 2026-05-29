@@ -80,7 +80,8 @@ class InternalinspectionController extends Controller
 
 
         $inspections = internalinspection::where('inspectorid', $user->id)->get();
-        $farms = farm::where('inspectorid', $user->id)->get();
+        $farms = farm::where('inspectorid', $user->id)
+            ->where('farmstate', '!=', 'DISABLED');
         $reports = reports::where('reportstate', 'ACTIVE')->where('reportname', 'not like', '%Entrance%')->get();
         //dd($farms);
 

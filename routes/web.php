@@ -103,6 +103,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/farm/annualreport', [FarmController::class, 'annualreport'])->name('annualreport');
         Route::get('/farm/viewcontract',[FarmController::class, 'viewcontract'])->name('viewcontract');
         Route::post('/farm/updatepicture',[FarmController::class, 'updatepicture'])->name('updatepicture');
+        Route::get('/farm/disabled', [FarmController::class, 'disabled'])->name('disabled.farms');
+        Route::post('/farm/reenable', [FarmController::class, 'reenable'])->name('farm.reenable');
+   
         
     });
     Route::middleware('auth')->group(function () {

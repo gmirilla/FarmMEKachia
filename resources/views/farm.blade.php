@@ -23,6 +23,7 @@
 @endphp
 @if ($user->roles=='ADMINISTRATOR')
 <a href='{{route('season.index')}}' class="btn btn-warning" style="margin:5px"><i class="fa fa-calendar"></i> Season Management</a>
+<a href='{{route('disabled.farms')}}' class="btn btn-secondary" style="margin:5px"><i class="fa fa-ban"></i> Disabled Farms</a>
 <a href='{{route('import_list')}}' class="btn btn-success" style="margin:5px"> Import Farmers</a>
 <a href='/newfarm' class="btn btn-success" style="margin:5px"> Register New Farmer</a>
 @endif
