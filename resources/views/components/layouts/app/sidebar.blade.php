@@ -53,7 +53,8 @@
         .c-sidebar a {
             color: #080808;
             border-color:  #FFCA28;
-            text-decoration:none
+            text-decoration:none;
+            touch-action: manipulation;
 
         }
         .c-navitem-selected {
