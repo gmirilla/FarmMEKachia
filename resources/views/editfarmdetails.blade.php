@@ -68,7 +68,7 @@
             <div class="row gy-2 gx-3 align-items-center">
             <div class="mb-3 col-auto">
                 <label for="community" class="form-label">Community/Village</label>
-                <input type="text" value={{$farm->community}} id="community" name="community"  required class="form-control">
+                <input type="text" value="{{$farm->community}}" id="community" name="community"  required class="form-control">
             </div>
             <div class="mb-3 col-auto">
                 <label for="city" class="form-label">City</label>
