@@ -57,6 +57,16 @@
             touch-action: manipulation;
 
         }
+
+        /* Bootstrap z-index goes up to 1040 (modal backdrop).
+           Force the Flux sidebar above all Bootstrap layers on tablet/mobile. */
+        [data-flux-sidebar] {
+            z-index: 1100 !important;
+        }
+
+        [data-flux-sidebar-backdrop] {
+            z-index: 1099 !important;
+        }
         .c-navitem-selected {
             background: #388E3C
 ;
