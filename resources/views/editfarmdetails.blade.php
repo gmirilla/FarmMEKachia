@@ -86,6 +86,7 @@
                 <input type="text" value="{{$farm->region}}" id="region" name="region"  required class="form-control">
             </div>
              <div class="mb-3 col-auto" style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+                <div class="text-center" style="background-color: #d7e17c; border-bottom: 1px solid #ccc; padding: 10px;">House Coordinates</div>
                 <label for="region" class="form-label">Latitude</label>
                 <input type="text" value="{{$farm->latitude}}" id="latitude" name="latitude"  class="form-control">
                 <label for="region" class="form-label">Longitude</label>
