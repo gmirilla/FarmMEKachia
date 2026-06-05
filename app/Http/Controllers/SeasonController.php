@@ -17,7 +17,7 @@ class SeasonController extends Controller
             'currentSeasonString' => Season::currentString(),
             'currentSeason'       => Season::current(),
             'seasons'             => Season::orderByDesc('created_at')->get(),
-            'inspectors'          => User::where('roles', 'INSPECTOR')->orderBy('name')->get(),
+            'inspectors'          => User::where('roles', 'INSPECTOR')->orWhere('roles', 'ADMIN')->orderBy('name')->get(),
             'farms'               => farm::orderBy('community')->orderBy('farmcode')->get(),
         ]);
     }
