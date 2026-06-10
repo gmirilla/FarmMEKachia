@@ -112,14 +112,14 @@
     <table  class="table table-bordered" style="border: 1px solid black">
         <tbody>
             <tr>
-                <td style="width: 50%">Previous year’s ({{$farmentrance->farm_period}}) harvest of certified crop delivered to the group</td>
+                <td style="width: 50%">Previous year’s harvest of certified crop delivered to the group</td>
                  <td>@if (!empty($farmentrance->getcropdeliver()->value))
                      {{$farmentrance->getcropdeliver()->value}}
                  @endif
                     </td>
         </tr>
                     <tr>
-                <td>Previous year’s  ({{$farmentrance->farm_period}}) estimated total production </td>
+                <td>Previous year’s estimated total production </td>
                  <td>
                     @if (!empty($farmentrance->getcropproduced()->value))
                      {{$farmentrance->getcropproduced()->value}}
