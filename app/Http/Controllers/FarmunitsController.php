@@ -148,6 +148,8 @@ class FarmunitsController extends Controller
     public function savefunit(Request $request)
     {
         //
+        
+
         try {
             //code...
             $farm=farm::where('id',$request->fid)->first();
@@ -161,6 +163,7 @@ class FarmunitsController extends Controller
             if ( !($request->has('farmunitid'))) {
                 # code...
                 $farmunit= new farmunits();
+                
             }
                     $year0=date('Y');
         $year1=$year0+1;
@@ -173,14 +176,16 @@ class FarmunitsController extends Controller
             $farmunit->plotname=$request->fuplotname;
             $farmunit->estimatedyield=$farmunit->fuarea*8000; //TO DO: CREATE A FUNCTION TO ALLOW USER TO INPUT ESTIMATE YIELD MULTIPLIER FOR SEASON
             $farmunit->farmentranceid=$request->farmentranceid;
+            $farmunit->dateplanted=$request->dateplanted ;
             $farmunit->imagefilepath=$request->imagefilePath;
             $farmunit->season=$currentseason;
             $farmunit->save();
+      
 
             //Update total Farm Area and unit count
 
             $totalfarmunitcount=$farmunit::where('farmid', $request->fid )
-            ->where('active', true)->where('season',$currentseason)->sum('fuarea')->count();
+            ->where('active', true)->where('season',$currentseason)->count();
             $totalfarmunitarea=$farmunit::where('farmid', $request->fid )
             ->where('active', true)->where('season',$currentseason)->sum('fuarea');
             $farm->farmarea=$totalfarmunitarea;
@@ -190,6 +195,8 @@ class FarmunitsController extends Controller
 
         } catch (\Throwable $th) {
             //throw $th;
+            echo 'Error Saving Farm Unit';
+            dd($th);
         }
         
         $farmunits=farmunits::where('farmid',$request->fid)->get();
@@ -198,6 +205,7 @@ class FarmunitsController extends Controller
             # return to the Entrance ID sheet...
         
             $fcode='fcode='.$farm->farmcode;
+
 
         return redirect()->route('begin',$fcode);
         }

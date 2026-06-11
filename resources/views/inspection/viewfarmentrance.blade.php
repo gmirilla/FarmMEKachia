@@ -71,13 +71,15 @@
 
     <h4>A. PRODUCTION HISTORY</h4>
     <table  class="table table-bordered" style="border: 1px solid black">
-        <thead><th>Ginger Plot Name</th><th>Farm Size (Ha)</th><th>Estimated Yield Kg</th><th>Lat N.</th><th>Long E.</th>
+        <thead><th>Ginger Plot Name</th><th>Farm Size (Ha)</th><th>Date Planted</th><th>Estimated Yield Kg</th><th>Lat N.</th><th>Long E.</th>
         </thead>
         <tbody>
             @forelse ($farmentrance->reportprodhistory() as $prodhistory )
+             
                         <tr>
                 <td>{{$prodhistory->plotname}}</td>
                  <td>{{$prodhistory->fuarea}}</td>
+                 <td>{{$prodhistory->dateplanted ?? 'N/A'}}</td>
                   <td>{{number_format($prodhistory->estimatedyield,2)}}</td>
                    <td>{{$prodhistory->fulatitude}}</td>
                     <td>{{$prodhistory->fulongitude}}</td>

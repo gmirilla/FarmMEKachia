@@ -1,614 +1,646 @@
 <style>
-    #overlay {
+#overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0,0,0,0.4); /* semi-transparent black */
+  background-color: rgba(0,0,0,0.5);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   z-index: 9999;
 }
-
 .loader-circle {
-  border: 6px solid #f3f3f3;
+  border: 6px solid rgba(255,255,255,0.3);
   border-top: 6px solid #3498db;
   border-radius: 50%;
   width: 50px;
   height: 50px;
   animation: spin 1s linear infinite;
-  margin-top: 10px;
+  margin-top: 12px;
 }
-
 .loader-text {
   color: white;
-  font-size: 1.2rem;
-  font-weight: bold;
+  font-size: 1.1rem;
+  font-weight: 600;
   text-align: center;
 }
-
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
-
 .custom-info {
   font-size: 16px;
   font-weight: bold;
   color: #ffffff;
   padding: 8px;
   background-color: transparent;
+}
+.gm-style .gm-style-iw-c {
+  background-color: transparent !important;
+  overflow: hidden !important;
+  box-shadow: none !important;
+}
+.gm-style-iw-d {
+  background-color: transparent !important;
+  overflow: hidden !important;
+}
+.gm-style-iw-chr { display: none !important; }
+.gm-style .gm-style-iw-tc { display: none !important; }
 
+.stat-card {
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border: 1px solid #e9ecef;
+  border-radius: 10px;
+  padding: 12px 16px;
+  text-align: center;
 }
-.gm-style .gm-style-iw-c{
-    background-color:transparent !important;
-    overflow:hidden  !important;
-    box-shadow: none !important;
+.stat-card label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #6c757d;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: block;
+  margin-bottom: 2px;
 }
-.gm-style-iw-d{
-    background-color:transparent !important;
-    overflow:hidden  !important;
+.stat-card .form-control {
+  border: none;
+  background: transparent;
+  text-align: center;
+  font-weight: 600;
+  padding: 0;
+  height: auto;
+  font-size: 0.95rem;
+  color: #212529;
+  box-shadow: none;
 }
-.gm-style-iw-chr{
-    display: none !important;
+.map-controls-card {
+  border-radius: 12px;
+  border: 1px solid #dee2e6;
 }
-.gm-style .gm-style-iw-tc{
-    display:none !important;
+.map-controls-card .card-header {
+  background: linear-gradient(90deg, #198754, #20c997);
+  color: white;
+  border-radius: 11px 11px 0 0;
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.coord-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #f1f3f5;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #495057;
+}
+.coord-badge span {
+  color: #0d6efd;
+  min-width: 80px;
+}
+.btn-tool {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 8px 10px;
+  border-radius: 8px;
+  min-width: 64px;
+}
+.btn-tool i { font-size: 1rem; }
+#map-wrapper {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 2px solid #dee2e6;
+}
+.section-title {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #6c757d;
+  margin-bottom: 8px;
+}
+.map-preview-thumb {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid #dee2e6;
 }
 </style>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"></link>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
 <x-layouts.app>
 
-    <h4 class="text-center">{{$farm->farmcode}} : NEW FARM UNIT</h4>
-    
-    <form action="{{route('fusave')}}" method="post">
-        @csrf
-        
-        <div class="row gy-2 gx-3 align-items-center">
-            <div class="col-auto">
-                <label for="farmcode" class="form-label">Farm Code</label>
-                <input type="text" value="{{$farm->farmcode}}" id="farmcode"  name="farmcode" disabled class="form-control">
-                <input type="text" value="{{$farm->id}}" id="fid"  name="fid" hidden class="form-control">
-                @if (!empty($farmunit))
-                <input type="text" value="{{$farmunit->id}}" id="farmunitid"  name="farmunitid" hidden class="form-control">
-                @endif
-                </div>
-            <div class="col-auto">
-                    <label for="fuid" class="form-label">Farm ID**</label>
-                    <input type="text" value="{{$farm->id}}" id="fuid"  name="fuid" disabled class="form-control">
-                    </div>
-                     <div class="col-auto">
-                    <label for="fuid" class="form-label">Plot Name</label>
-                      @if (empty($farmunit))
-                        <input type="text" value="" id="fuplotname"  name="fuplotname"  required class="form-control"> 
-                        @else
-                        <input type="text" value="{{$farmunit->plotname}}" id="fuplotname"  name="fuplotname"   required class="form-control">
-                        @endif
-                    </div>
-            <div class="col-auto">
-                        <label for="fuarea" class="form-label">Unit area (ha)*</label>
-                        @if (empty($farmunit))
-                        <input type="text" value="" id="fuarea"  name="fuarea"  required class="form-control"> 
-                        @else
-                        <input type="text" value="{{$farmunit->fuarea}}" id="fuarea"  name="fuarea"  required class="form-control">
-                        @endif
-                        
-                        </div>
-            <div class="col-auto">
-                            <label for="fulatitude" class="form-label">Latitude</label>
-                            @if (empty($farmunit))
-                            <input type="text" value="" id="fulatitude"  name="fulatitude"   class="form-control">
-                            @else
-                            <input type="text" value="{{$farmunit->fulatitude}}" id="fulatitude"  name="fulatitude"   class="form-control">
-                            @endif
-                            
-                            </div>
-            <div class="col-auto" >
-                                <label for="fulongitude" class="form-label">Longitude</label>
-                                @if (empty($farmunit))
-                                <input type="text" value="" id="fulongitude"  name="fulongitude"   class="form-control">
-                                @else
-                                <input type="text" value="{{$farmunit->fulongitude}}" id="fulongitude"  name="fulongitude"   class="form-control">
-                                @endif                 
-            </div>
-            <div class="col-auto">
-                <label for="mapfilepath" class="form-label">Saved Map</label>
-                @if (empty($farmunit->imagefilepath))
-                    <input type="text" disabled id="mapfilePath" name="mapfilePath" value="No Map saved" class="form-control">
-                @else
-
-                     <input type="text" disabled id="mapfilePath" name="mapfilePath" value="{{$farmunit->imagefilepath}}" class="form-control">
-                     
-                @endif              
-            </div>
-            <div class="col-auto" >
-
-                @if (!empty($farmentrance))
-                <input type="text" name="farmentranceid" hidden  value="{{$farmentrance->id}}">
-                @endif
-                @if (empty($farmunit->imagefilepath))
-                     <input type="text"  hidden id="imagefilePath" name="imagefilePath" class="form-control" >
-                     <button type="submit" disabled class="btn btn-primary" id="addfarmunit">Add</button>
-                @else
-                     <input type="text"  hidden id="imagefilePath" name="imagefilePath" class="form-control" value="{{$farmunit->imagefilepath}}">
-                     <button type="submit" class="btn btn-primary"  id="addfarmunit">Add</button>
-                @endif
-            </div>
-        </div>
-        <div class="row">
-            @if (!empty($farmunit->imagefilepath))
-           <img src="{{Request::root().($farmunit->imagefilepath)}}" alt="" style="width: 80px; height: 80px;">
-           @else
-              <img id="uploadedImage" src="{{Request::root().('/storage/farmmap.png')}}" alt="No Map Uploaded" style="width: 80px; height: 80px;">
-           @endif
-        </div>
-        
-
-    </form>
-
-    <body 
-    @if (!empty($farmunit) && !empty($farmunit->fulatitude) && !empty($farmunit->fulongitude))
-    onload="initMap(parseFloat({{$farmunit->fulatitude}}), parseFloat({{$farmunit->fulongitude}}))"> 
-    @else
-    onload="initMap(0, 0)">
-    @endif
-<script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.13/dist/html-to-image.min.js"></script>
-    </body>
-    <div>
-        
-        <h4 class="text-center">Calculate Area {{config('name')}}</h4>
 <div id="overlay" style="display: none;">
   <div class="loader-text">Saving map...</div>
   <div class="loader-circle"></div>
 </div>
-            <div class="row" style="margin: 10px">
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <p><b>Latitude: </b><span id="latitude"></span></p>
-                        <p><b>Longitude: </b><span id="longitude"></span></p>
-                        <button class="btn btn-primary" onclick="addWaypoint()" data-toggle="tooltip" data-placement="right" title="Get Current Coordinates"><i class="fa fa-map-marker" aria-hidden="true"></i></button>
-                        <button class="btn btn-success" onclick="setFarmLocation()" data-toggle="tooltip" data-placement="right" title="Set as Farm Coordinates"><i class="fa fa-pencil" aria-hidden="true"></i></button>
-                        <button class="btn btn-warning" onclick="showPolygonArea()" data-toggle="tooltip" data-placement="right" title="Calculate Area"><i class="fa fa-calculator" aria-hidden="true"></i>Calc</button>
-                        <button class="btn btn-danger" onclick="resetPoly()" data-toggle="tooltip" data-placement="right" title="Clear all previous Coordinates"><i class="fa fa-eraser" aria-hidden="true"></i>Reset</button>  
-                        <button class="btn btn-primary" id='startTrackingbtn' onclick="startTracking()">Start Tracking</button>
-                        <button class="btn btn-danger" id='stopTrackingbtn' onclick="stopTracking()">Stop Tracking</button>
-                        <button class="btn btn-primary" onclick="saveMap()">Save Map</button>
- 
-                        </div>
 
+{{-- Page Header --}}
+<div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+  <div>
+    <h4 class="mb-0 fw-bold">
+      <i class="fa fa-map-o me-2 text-success"></i>
+      {{$farm->farmcode}} &mdash; Farm Unit
+    </h4>
+    <p class="text-muted mb-0" style="font-size:0.82rem">Configure plot details and mark boundaries on the map</p>
+  </div>
+</div>
 
+{{-- Farm Details Form --}}
+<form action="{{route('fusave')}}" method="post" id="fuForm">
+  @csrf
+  <input type="text" value="{{$farm->id}}" id="fid" name="fid" hidden>
+  @if (!empty($farmunit))
+  <input type="text" value="{{$farmunit->id}}" id="farmunitid" name="farmunitid" hidden>
+  @endif
+  @if (!empty($farmentrance))
+  <input type="text" name="farmentranceid" hidden value="{{$farmentrance->id}}">
+  @endif
+  <input type="text" hidden id="imagefilePath" name="imagefilePath" class="form-control"
+    @if(!empty($farmunit->imagefilepath)) value="{{$farmunit->imagefilepath}}" @endif>
 
-                                        <div class="card mb-3" >
-                    <div class="card-title text-center" style="display: none;"><b>PLOTTED COORDINATES</b></div>
-                    <div class="card-body table-responsive" style="display: none;">
-                        <table class="table table-striped table-bordered fs-6">
-                            <thead>
-                                <th>Lat</th><th>Long</th>
-                            </thead>
-                            <tbody id="formartcoordinates">
+  <div class="card border-0 shadow-sm mb-3" style="border-radius:12px;">
+    <div class="card-header bg-white border-bottom py-2 px-3" style="border-radius:12px 12px 0 0;">
+      <span class="fw-semibold" style="font-size:0.82rem; text-transform:uppercase; letter-spacing:.5px; color:#6c757d;">
+        <i class="fa fa-info-circle me-1"></i> Plot Information
+      </span>
+    </div>
+    <div class="card-body px-3 py-3">
 
-                            </tbody>
-                        </table>
-                        @if (!empty($farmunit))
-                        <div><textarea id="polycoord" name="polycoords" class="form-control">{{$farmunit->plot_coords}}</textarea></div>                         
-                        @endif
-                            
-                    </div>
-                </div>
-
-                </div>
-
-
-                <div  id="showArea" class="card" style="display:none">
-                    <div class="card-title text-center"><b>FARM AREA</b></div>
-                    <div class="card-body"></div>
-                    <p><b><span id="farmareaha"></span> ha </b></p>
-                    <p><b><span id="farmaream2"></span> m<sup>2</sup></b></p>
-                    <button class="btn btn-success" onclick="setFarmarea()">Set as Farm Area</button>
-                    
-                </div>
-
-            </div>
-            <div class="card mb-3">
-                <div class="card-header"><b>IMPORT MAP</b></div>
-                <div class="card-body">
-                        <div class="col-auto">
-                        
-                        <p><i>Use the file input field below to manually upload a map image. <br>
-                            <b>Max File size:</b> 2MB, <b>Formats:</b> JPG,JPEG,PNG </i></p>
-                        <form id="uploadForm" enctype="multipart/form-data">
-                        @csrf
-                        <input type="file" name="importimage" id="importimage" class="form-control">
-                        <button type="submit" class="btn btn-primary mt-2">Upload Map</button>
-                        </form>
-
-                        <div id="uploadStatus" class="alert alert-danger" style="margin-top: 10px;"></div>
-                    </div>
-                </div>
-            </div>
-
-
-        <div class="flex">
-            <div class="card" style="height: 550px; width: 90%;">
-                <div class="card-body">
-                    <div id="map" style="height: 500px; width: 100%;"></div>
-
-                </div>
-                
-            </div>
-            
-
+      {{-- Row 1: identifiers --}}
+      <div class="row g-3 mb-3">
+        <div class="col-6 col-sm-4 col-md-2">
+          <label class="form-label fw-semibold" style="font-size:.8rem;">Farm Code</label>
+          <input type="text" value="{{$farm->farmcode}}" id="farmcode" name="farmcode" disabled class="form-control form-control-sm bg-light">
         </div>
+        <div class="col-6 col-sm-4 col-md-2">
+          <label class="form-label fw-semibold" style="font-size:.8rem;">Farm ID</label>
+          <input type="text" value="{{$farm->id}}" id="fuid" name="fuid" disabled class="form-control form-control-sm bg-light">
+        </div>
+        <div class="col-12 col-sm-4 col-md-3">
+          <label class="form-label fw-semibold" style="font-size:.8rem;">Plot Name <span class="text-danger">*</span></label>
+          <input type="text" value="{{$farmunit->plotname ?? ''}}" id="fuplotname" name="fuplotname" required
+            placeholder="e.g. North Block A" class="form-control form-control-sm">
+        </div>
+        <div class="col-6 col-sm-4 col-md-2">
+          <label class="form-label fw-semibold" style="font-size:.8rem;">Area (ha) <span class="text-danger">*</span></label>
+          <input type="text" value="{{$farmunit->fuarea ?? ''}}" id="fuarea" name="fuarea" required
+            placeholder="0.00" class="form-control form-control-sm">
+        </div>
+        <div class="col-6 col-sm-4 col-md-2">
+          <label class="form-label fw-semibold" style="font-size:.8rem;">Date Planted <span class="text-danger">*</span></label>
+          <input type="date" value="{{$farmunit->dateplanted ?? ''}}" id="dateplanted" name="dateplanted" required
+            class="form-control form-control-sm">
+        </div>
+      </div>
 
-
+      {{-- Row 2: coordinates + map + submit --}}
+      <div class="row g-3 align-items-end">
+        <div class="col-6 col-sm-4 col-md-2">
+          <label class="form-label fw-semibold" style="font-size:.8rem;">Latitude</label>
+          <input type="text" value="{{$farmunit->fulatitude ?? ''}}" id="fulatitude" name="fulatitude"
+            placeholder="auto" class="form-control form-control-sm">
+        </div>
+        <div class="col-6 col-sm-4 col-md-2">
+          <label class="form-label fw-semibold" style="font-size:.8rem;">Longitude</label>
+          <input type="text" value="{{$farmunit->fulongitude ?? ''}}" id="fulongitude" name="fulongitude"
+            placeholder="auto" class="form-control form-control-sm">
+        </div>
+        <div class="col-12 col-sm-6 col-md-4">
+          <label class="form-label fw-semibold" style="font-size:.8rem;">Saved Map</label>
+          <div class="d-flex align-items-center gap-2">
+            @if (empty($farmunit->imagefilepath))
+              <img id="uploadedImage" src="{{Request::root().('/storage/farmmap.png')}}" alt="No Map" class="map-preview-thumb">
+              <input type="text" disabled id="mapfilePath" name="mapfilePath" value="No map saved" class="form-control form-control-sm bg-light text-muted flex-grow-1">
+            @else
+              <img src="{{Request::root().($farmunit->imagefilepath)}}" alt="Map" class="map-preview-thumb">
+              <input type="text" disabled id="mapfilePath" name="mapfilePath" value="{{$farmunit->imagefilepath}}" class="form-control form-control-sm bg-light flex-grow-1">
+            @endif
+          </div>
+        </div>
+        <div class="col-12 col-sm-auto ms-sm-auto">
+          @if (empty($farmunit->imagefilepath))
+            <button type="submit" disabled class="btn btn-primary w-100" id="addfarmunit">
+              <i class="fa fa-save me-1"></i> Save Farm Unit
+            </button>
+          @else
+            <button type="submit" class="btn btn-primary w-100" id="addfarmunit">
+              <i class="fa fa-save me-1"></i> Save Farm Unit
+            </button>
+          @endif
+        </div>
+      </div>
 
     </div>
-    <script async src="https://maps.googleapis.com/maps/api/js?key={{env('MAP')}}&libraries=geometry,drawing"></script>
-    <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.13/dist/html-to-image.min.js"></script>
-    <script>
-        var map; // Store the map instance
-        var pathCoordinates = []; // Array to store GPS coordinates
-        var polyline; // Polyline for the walking path
-        var trackingActive = false; // Flag to control tracking
-        var watchID = null; // Stores the geolocation watch ID
-        var polygon;
-        var polygonCoordinates = []; // Stores clicked points
-        var waypointCoordinates = [];
-        var infoWindow=null;
-        var maparea;  //stores the value of the polygon area area
+  </div>
+</form>
+{{-- Import Map --}}
+<div class="card border-0 shadow-sm mb-4" style="border-radius:12px;">
+  <div class="card-header bg-white border-bottom py-2 px-3" style="border-radius:12px 12px 0 0;">
+    <span class="fw-semibold" style="font-size:.82rem; text-transform:uppercase; letter-spacing:.5px; color:#6c757d;">
+      <i class="fa fa-upload me-1"></i> Import Map Image
+    </span>
+  </div>
+  <div class="card-body px-3 py-3">
+    <p class="text-muted mb-2" style="font-size:.82rem;">
+      <i class="fa fa-info-circle me-1"></i>
+      Manually upload a map image. Max <strong>2MB</strong> &mdash; JPG, JPEG, PNG accepted.
+    </p>
+    <form id="uploadForm" enctype="multipart/form-data" class="d-flex flex-wrap gap-2 align-items-end">
+      @csrf
+      <div style="flex:1; min-width:200px;">
+        <input type="file" name="importimage" id="importimage" class="form-control form-control-sm" accept=".jpg,.jpeg,.png">
+      </div>
+      <button type="submit" class="btn btn-primary btn-sm">
+        <i class="fa fa-upload me-1"></i> Upload
+      </button>
+    </form>
+    <div id="uploadStatus" class="alert alert-danger mt-2 py-2" style="display:none; font-size:.82rem;"></div>
+  </div>
+</div>
 
+{{-- Map Tools + Map --}}
+<div class="card border-0 shadow-sm mb-3 map-controls-card">
+  <div class="card-header d-flex align-items-center gap-2 py-2 px-3">
+    <i class="fa fa-map-marker"></i>
+    <span>Boundary Mapping &amp; Area Calculator</span>
+  </div>
+  <div class="card-body p-3">
 
+    {{-- Coordinate readout --}}
+    <div class="d-flex flex-wrap gap-3 mb-3 align-items-center">
+      <div class="coord-badge">
+        <i class="fa fa-crosshairs text-muted" style="font-size:.85rem;"></i>
+        Lat: <span id="latitude">—</span>
+      </div>
+      <div class="coord-badge">
+        <i class="fa fa-crosshairs text-muted" style="font-size:.85rem;"></i>
+        Lng: <span id="longitude">—</span>
+      </div>
+    </div>
 
-        function initMap() {
-            map = new google.maps.Map(document.getElementById("map"), {
-                zoom: 20,
-                center: { lat: 12.0022, lng: 8.5919 } // Starting location (Kano, Nigeria)
-            });
+    {{-- Toolbar --}}
+    <div class="d-flex flex-wrap gap-2 mb-3">
+      <button class="btn btn-outline-primary btn-tool" onclick="addWaypoint()" title="Get Current Coordinates">
+        <i class="fa fa-map-marker"></i>Waypoint
+      </button>
+      <button class="btn btn-outline-success btn-tool" onclick="setFarmLocation()" title="Set as Farm Coordinates">
+        <i class="fa fa-pencil"></i>Set Location
+      </button>
+      <button class="btn btn-outline-warning btn-tool" onclick="showPolygonArea()" title="Calculate Area">
+        <i class="fa fa-calculator"></i>Calc Area
+      </button>
+      <button class="btn btn-outline-danger btn-tool" onclick="resetPoly()" title="Clear Coordinates">
+        <i class="fa fa-eraser"></i>Reset
+      </button>
+      <div class="vr d-none d-sm-block mx-1" style="opacity:.3;"></div>
+      <button class="btn btn-primary btn-tool" id="startTrackingbtn" onclick="startTracking()">
+        <i class="fa fa-play"></i>Track
+      </button>
+      <button class="btn btn-danger btn-tool" id="stopTrackingbtn" onclick="stopTracking()">
+        <i class="fa fa-stop"></i>Stop
+      </button>
+      <div class="vr d-none d-sm-block mx-1" style="opacity:.3;"></div>
+      <button class="btn btn-success btn-tool" onclick="saveMap()">
+        <i class="fa fa-camera"></i>Save Map
+      </button>
+    </div>
 
-            polyline = new google.maps.Polyline({
-                path: pathCoordinates,
-                geodesic: true,
-                strokeColor: "#FF0000",
-                strokeOpacity: 1.0,
-                strokeWeight: 2
-            });
+    {{-- Area result --}}
+    <div id="showArea" class="alert alert-success d-flex align-items-center gap-3 py-2 mb-3" style="display:none!important; border-radius:8px;" hidden>
+      <i class="fa fa-area-chart fa-lg"></i>
+      <div>
+        <div class="fw-bold">Calculated Farm Area</div>
+        <span id="farmareaha"></span> ha &nbsp;|&nbsp; <span id="farmaream2"></span> m&sup2;
+      </div>
+      <button class="btn btn-success btn-sm ms-auto" onclick="setFarmarea()">
+        <i class="fa fa-check me-1"></i>Use This Area
+      </button>
+    </div>
 
-            polyline.setMap(map);
+    {{-- Plotted coordinates (hidden by default) --}}
+    <div class="mb-3" style="display:none;">
+      <div class="section-title">Plotted Coordinates</div>
+      <div class="table-responsive" style="max-height:180px;">
+        <table class="table table-sm table-striped table-bordered mb-1" style="font-size:.8rem;">
+          <thead class="table-dark"><tr><th>Lat</th><th>Long</th></tr></thead>
+          <tbody id="formartcoordinates"></tbody>
+        </table>
+      </div>
+      @if (!empty($farmunit))
+      <textarea id="polycoord" name="polycoords" class="form-control form-control-sm mt-1" rows="2"
+        style="font-size:.75rem; font-family:monospace;">{{$farmunit->plot_coords}}</textarea>
+      @endif
+    </div>
 
-                polygon = new google.maps.Polygon({
-                paths: polygonCoordinates,
-                strokeColor: "#90EE90",
-                strokeOpacity: 0.8,
-                strokeWeight: 2,
-                fillColor: "#0b6623",
-                fillOpacity: 0.8
-            });
+    {{-- Map --}}
+    <div id="map-wrapper" style="height:520px;">
+      <div id="map" style="height:100%; width:100%;"></div>
+    </div>
 
-            polygon.setMap(map);
+  </div>
+</div>
 
+<body
+  @if (!empty($farmunit) && !empty($farmunit->fulatitude) && !empty($farmunit->fulongitude))
+  onload="initMap(parseFloat({{$farmunit->fulatitude}}), parseFloat({{$farmunit->fulongitude}}))">
+  @else
+  onload="initMap(0, 0)">
+  @endif
+</body>
 
+<script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.13/dist/html-to-image.min.js"></script>
+<script async src="https://maps.googleapis.com/maps/api/js?key={{env('MAP')}}&libraries=geometry,drawing"></script>
+<script>
+  var map;
+  var pathCoordinates = [];
+  var polyline;
+  var trackingActive = false;
+  var watchID = null;
+  var polygon;
+  var polygonCoordinates = [];
+  var waypointCoordinates = [];
+  var infoWindow = null;
+  var maparea;
 
-            // Listen for clicks on the map to add points
-            map.addListener("click", function(event) {
-                addPoint(event.latLng);
-            });
-        }
-        
-             function addPoint(location) {
-            polygonCoordinates.push(location); // Add new coordinate
-            polygon.setPaths(polygonCoordinates);// Update polygon shape
-        }
+  function initMap() {
+    map = new google.maps.Map(document.getElementById("map"), {
+      zoom: 20,
+      center: { lat: 12.0022, lng: 8.5919 }
+    });
 
-function showPolygonArea() {
+    polyline = new google.maps.Polyline({
+      path: pathCoordinates,
+      geodesic: true,
+      strokeColor: "#FF0000",
+      strokeOpacity: 1.0,
+      strokeWeight: 2
+    });
+    polyline.setMap(map);
+
+    polygon = new google.maps.Polygon({
+      paths: polygonCoordinates,
+      strokeColor: "#90EE90",
+      strokeOpacity: 0.8,
+      strokeWeight: 2,
+      fillColor: "#0b6623",
+      fillOpacity: 0.8
+    });
+    polygon.setMap(map);
+
+    map.addListener("click", function(event) {
+      addPoint(event.latLng);
+    });
+  }
+
+  function addPoint(location) {
+    polygonCoordinates.push(location);
+    polygon.setPaths(polygonCoordinates);
+  }
+
+  function showPolygonArea() {
     if (!polygon) return console.warn("Polygon not ready.");
-
     const area = google.maps.geometry.spherical.computeArea(polygon.getPath().getArray());
-    const areaha=area/10000;
+    const areaha = area / 10000;
     const center = getPolygonCenter(polygon.getPath());
 
-        if (infoWindow) {
-        infoWindow.close();
-    }
-    
+    if (infoWindow) infoWindow.close();
     infoWindow = new google.maps.InfoWindow({
-        content: `<div class="custom-info">Area: ${areaha.toFixed(3)} Ha</div>`,
-        position: center
+      content: `<div class="custom-info">Area: ${areaha.toFixed(3)} Ha</div>`,
+      position: center
     });
-
-    maparea=areaha.toFixed(3);
-
+    maparea = areaha.toFixed(3);
     infoWindow.open(map);
-}
 
-function getPolygonCenter(path) {
+    const areaCard = document.getElementById('showArea');
+    document.getElementById('farmareaha').textContent = areaha.toFixed(3);
+    document.getElementById('farmaream2').textContent = area.toFixed(0);
+    areaCard.removeAttribute('hidden');
+    areaCard.style.display = '';
+  }
+
+  function getPolygonCenter(path) {
     const bounds = new google.maps.LatLngBounds();
-    path.forEach(function(latlng) {
-        bounds.extend(latlng);
-    });
+    path.forEach(function(latlng) { bounds.extend(latlng); });
     return bounds.getCenter();
-}
+  }
 
+  function setFarmarea() {
+    document.getElementById('fuarea').value = maparea;
+  }
 
+  function startTracking() {
+    if (!trackingActive) {
+      trackingActive = true;
+      document.getElementById('startTrackingbtn').disabled = true;
+      document.getElementById('stopTrackingbtn').disabled = false;
 
-        function startTracking() {
-            if (!trackingActive) {
-                trackingActive = true;
-                let startTrackingbtn= document.getElementById('startTrackingbtn');
-                let stopTrackingbtn= document.getElementById('stopTrackingbtn');
-                startTrackingbtn.disabled=true;
-                stopTrackingbtn.disabled=false;
+      if (navigator.geolocation) {
+        watchID = navigator.geolocation.watchPosition(
+          function(position) {
+            var newPoint = { lat: position.coords.latitude, lng: position.coords.longitude };
+            pathCoordinates.push(newPoint);
+            polyline.setPath(pathCoordinates);
+            const el = document.getElementById('polycoords');
+            if (el) el.textContent = JSON.stringify(pathCoordinates);
+            map.setCenter(newPoint);
+          },
+          function(error) { console.log("Error getting location: ", error); },
+          { enableHighAccuracy: true, timeout: 5000, maximumAge: 5000 }
+        );
+      } else {
+        alert("Geolocation is not supported by your browser.");
+      }
+    }
+  }
 
-                if (navigator.geolocation) {
-                    watchID = navigator.geolocation.watchPosition(
-                        function(position) {
-                            var newPoint = {
-                                lat: position.coords.latitude,
-                                lng: position.coords.longitude
-                            };
-
-                            pathCoordinates.push(newPoint);
-                            polyline.setPath(pathCoordinates);
-                            document.getElementById('polycoords').textContent=JSON.stringify(pathCoordinates);
-                            console.log(pathCoordinates);
-
-                            map.setCenter(newPoint);
-                        },
-                        function(error) {
-                            console.log("Error getting location: ", error);
-                        },
-                        {
-                            enableHighAccuracy: true,
-                            timeout: 5000,
-                            maximumAge: 5000
-                        }
-                    );
-                } else {
-                    alert("Geolocation is not supported by your browser.");
-                }
-            }
-        }
-
-   function stopTracking() {
+  function stopTracking() {
     if (trackingActive) {
-        trackingActive = false;
-
-        let startTrackingbtn = document.getElementById('startTrackingbtn');
-        let stopTrackingbtn = document.getElementById('stopTrackingbtn');
-        
-        startTrackingbtn.disabled = false;
-        stopTrackingbtn.disabled = true;
-
-        if (watchID !== null) {
-            navigator.geolocation.clearWatch(watchID); // Stop tracking
-            watchID = null;
-        }
-
-        // Generate polygon from the tracked path
-        if (pathCoordinates.length > 2) {  // Ensure there are enough points to form a polygon
-            generatePolygon(pathCoordinates);
-        } else {
-            alert("Not enough data points to create a polygon.");
-        }
+      trackingActive = false;
+      document.getElementById('startTrackingbtn').disabled = false;
+      document.getElementById('stopTrackingbtn').disabled = true;
+      if (watchID !== null) {
+        navigator.geolocation.clearWatch(watchID);
+        watchID = null;
+      }
+      if (pathCoordinates.length > 2) {
+        generatePolygon(pathCoordinates);
+      } else {
+        alert("Not enough data points to create a polygon.");
+      }
     }
-}
-function addWaypoint() {
+  }
+
+  function addWaypoint() {
     if (pathCoordinates.length > 0) {
-        let lastPoint = pathCoordinates[pathCoordinates.length - 1]; // Get last tracked position
-        waypointCoordinates.push(lastPoint); // Save as waypoint
-        console.log("Waypoint added: ", lastPoint);
+      let lastPoint = pathCoordinates[pathCoordinates.length - 1];
+      waypointCoordinates.push(lastPoint);
     } else {
-        navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
-        let lastPoint=pathCoordinates[0]; 
-        waypointCoordinates.push(lastPoint); // save as waypoint
-        console.log("New Poly Waypoint added: ", lastPoint);
-        //alert("No GPS position available yet.");
+      navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
+      let lastPoint = pathCoordinates[0];
+      waypointCoordinates.push(lastPoint);
     }
-}
+  }
 
-    function successCallback(position) {
-      const latitude = position.coords.latitude;
-      const longitude = position.coords.longitude;
-      let spanlatitude=document.getElementById('latitude'); 
-      let spanlongitude=document.getElementById('longitude'); 
-      console.log("Console Log: ", latitude, longitude);
-      spanlongitude.textContent=longitude;
-      spanlatitude.textContent=latitude;
-      // Use latitude and longitude
-    }
+  function successCallback(position) {
+    const latitude = position.coords.latitude;
+    const longitude = position.coords.longitude;
+    document.getElementById('longitude').textContent = longitude;
+    document.getElementById('latitude').textContent = latitude;
+  }
 
-    function errorCallback(error) {
-      // Handle errors, e.g., user denied location access
-    }
+  function errorCallback(error) {}
 
-function generatePolygon(coordinates) {
-    if (polygon) {
-        polygon.setMap(null); // Remove previous polygon
-    }
-        if (coordinates.length < 3) {
-        alert("Not enough points to form a polygon.");
-        return;
-    }
-
-
+  function generatePolygon(coordinates) {
+    if (polygon) polygon.setMap(null);
+    if (coordinates.length < 3) { alert("Not enough points to form a polygon."); return; }
     polygon = new google.maps.Polygon({
-        paths: coordinates,
-        strokeColor: "#90EE90",
-        strokeOpacity: 0.8,
-        strokeWeight: 2,
-        fillColor: "#0b6623",
-        fillOpacity: 0.8
+      paths: coordinates,
+      strokeColor: "#90EE90",
+      strokeOpacity: 0.8,
+      strokeWeight: 2,
+      fillColor: "#0b6623",
+      fillOpacity: 0.8
     });
-
     polygon.setMap(map);
-
-    // Display area of the polygon
     showPolygonArea();
-}
+  }
 
-function resetPoly() {
-    // Remove the polygon if it exists
-    if (polygon) {
-        polygon.setMap(null);
-    }
-
-    // Close the InfoWindow if it's open
-    if (infoWindow) {
-        infoWindow.close();
-    }
-
-    // Reset coordinate arrays
+  function resetPoly() {
+    if (polygon) polygon.setMap(null);
+    if (infoWindow) infoWindow.close();
     polygonCoordinates = [];
     pathCoordinates = [];
-
-    // Reinitialize the polygon properly
+    const areaCard = document.getElementById('showArea');
+    areaCard.setAttribute('hidden', '');
+    areaCard.style.display = 'none';
     polygon = new google.maps.Polygon({
-        paths: polygonCoordinates, // Use the correct variable
-        strokeColor: "#90EE90",
-        strokeOpacity: 0.8,
-        strokeWeight: 2,
-        fillColor: "#0b6623",
-        fillOpacity: 0.8
+      paths: polygonCoordinates,
+      strokeColor: "#90EE90",
+      strokeOpacity: 0.8,
+      strokeWeight: 2,
+      fillColor: "#0b6623",
+      fillOpacity: 0.8
     });
-
-    // Ensure the polygon is added back to the map
     polygon.setMap(map);
-}
+  }
 
-    function setFarmLocation(){
-        let fulatitude=document.getElementById('fulatitude'); 
-        let fulongitude=document.getElementById('fulongitude'); 
-        let spanlatitude=document.getElementById('latitude'); 
-      let spanlongitude=document.getElementById('longitude'); 
-      let fuarea=document.getElementById('fuarea');
+  function setFarmLocation() {
+    document.getElementById('fulatitude').value = document.getElementById('latitude').textContent;
+    document.getElementById('fulongitude').value = document.getElementById('longitude').textContent;
+    document.getElementById('fuarea').value = maparea;
+  }
+</script>
 
-
-        fulatitude.value=spanlatitude.textContent;
-        fulongitude.value=spanlongitude.textContent;
-        fuarea.value=maparea;
-    
-
-    }
-
-    </script>
 <script>
 function saveMap() {
   const mapElement = document.getElementById('map');
   const overlay = document.getElementById('overlay');
   const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-    let imagePath=document.getElementById('imagefilePath');
-    let mapFilePath=document.getElementById('mapfilePath');
-    let addfarmunit=document.getElementById('addfarmunit');
+  let imagePath = document.getElementById('imagefilePath');
+  let mapFilePath = document.getElementById('mapfilePath');
+  let addfarmunit = document.getElementById('addfarmunit');
 
-  if (!mapElement) {
-    console.error('Map element not found!');
-    return;
-  }
-
-  overlay.style.display = 'flex'; // Show the overlay
+  if (!mapElement) { console.error('Map element not found!'); return; }
+  overlay.style.display = 'flex';
 
   htmlToImage.toPng(mapElement)
-    .then((dataUrl) => {
-      return fetch('/save-map-image', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-TOKEN': csrfToken
-        },
-        body: JSON.stringify({ image: dataUrl })
-      });
-    })
+    .then((dataUrl) => fetch('/save-map-image', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+      body: JSON.stringify({ image: dataUrl })
+    }))
     .then((response) => {
-      if (!response.ok) {
-        throw new Error(`Server responded with status ${response.status}`);
-      }
+      if (!response.ok) throw new Error(`Server responded with status ${response.status}`);
       return response.json();
     })
     .then((data) => {
-        console.log('✅ Backend Response:', data);
-
-        imagePath.value=data.path;
-        mapFilePath.value=data.filename;
-        addfarmunit.disabled=false; //enable the Add Farm unit button
-
-        alert('Map saved successfully!')
+      imagePath.value = data.path;
+      mapFilePath.value = data.filename;
+      addfarmunit.disabled = false;
+      alert('Map saved successfully!');
     })
     .catch((err) => {
-      console.error('❌ Failed to save map image:', err);
+      console.error('Failed to save map image:', err);
       alert('Error saving map. Please try again.');
     })
-    .finally(() => {
-      overlay.style.display = 'none'; // Hide the overlay
-    });
+    .finally(() => { overlay.style.display = 'none'; });
 }
 </script>
+
 <script>
 document.getElementById('uploadForm').addEventListener('submit', function(e) {
-    e.preventDefault();
+  e.preventDefault();
+  const formData = new FormData(this);
+  let addfarmunit = document.getElementById('addfarmunit');
+  const statusEl = document.getElementById('uploadStatus');
+  addfarmunit.disabled = true;
 
-    const form = this;
-    const formData = new FormData(form);
-    let addfarmunit=document.getElementById('addfarmunit');
-    addfarmunit.disabled=true; //disable the Add Farm unit button while uploading
-
- fetch('/upload-map', {
+  fetch('/upload-map', {
     method: 'POST',
     headers: {
-        'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
-        'Accept': 'application/json'
+      'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
+      'Accept': 'application/json'
     },
     body: formData
-})
-.then(async response => {
+  })
+  .then(async response => {
     const data = await response.json();
     if (!response.ok) throw data;
     return data;
-})
-.then(data => {
-    document.getElementById('uploadStatus').innerText = data.message || 'Upload successful!';
+  })
+  .then(data => {
+    statusEl.className = 'alert alert-success mt-2 py-2';
+    statusEl.style.display = '';
+    statusEl.innerText = data.message || 'Upload successful!';
     if (data.filename) {
-        document.querySelector('input[name="mapfilePath"]').value = data.path;
-        document.querySelector('input[name="imagefilePath"]').value = data.path;
-        addfarmunit.disabled=false; //enable the Add farm Unit button after succesful upload
-        changeImage();
+      document.querySelector('input[name="mapfilePath"]').value = data.path;
+      document.querySelector('input[name="imagefilePath"]').value = data.path;
+      addfarmunit.disabled = false;
+      changeImage();
     }
-})
-.catch(error => {
+  })
+  .catch(error => {
     let message = 'Upload failed.';
     if (error.errors) {
-        message = Object.values(error.errors).flat().join('\n');
+      message = Object.values(error.errors).flat().join('\n');
     } else if (error.message) {
-        message = error.message;
+      message = error.message;
     }
-    document.getElementById('uploadStatus').innerText = message;
+    statusEl.className = 'alert alert-danger mt-2 py-2';
+    statusEl.style.display = '';
+    statusEl.innerText = message;
+    addfarmunit.disabled = false;
     console.error(error);
-});
-})
-</script>
-<script>
-  document.getElementById("importimage").addEventListener("change", function() {
-    const file = this.files[0];
-    const maxSize = 2 * 1024 * 1024; // 2MB in bytes
-
-    if (file && file.size > maxSize) {
-      alert("File is too large! Please select a file smaller than 2MB.");
-      this.value = ""; // Clear the input
-    }
   });
-</script>
-<script>
-  // Function to change the image
-  function changeImage() {
-    const newImageUrl = document.getElementById("imagefilePath").value;
-    document.getElementById("uploadedImage").src = newImageUrl;
+});
+
+document.getElementById("importimage").addEventListener("change", function() {
+  const file = this.files[0];
+  if (file && file.size > 2 * 1024 * 1024) {
+    alert("File is too large! Please select a file smaller than 2MB.");
+    this.value = "";
   }
+});
 
+function changeImage() {
+  const newImageUrl = document.getElementById("imagefilePath").value;
+  const img = document.getElementById("uploadedImage");
+  if (img) img.src = newImageUrl;
+}
 </script>
-
-
-
 
 </x-layouts.app>

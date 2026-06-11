@@ -250,11 +250,11 @@
                 @forelse ($reportquestions as $inspection)
                     <tr>
                         <td class="small">{{ $inspection->season }}</td>
-                        <td class="small">{{ $inspection->getreport()->reportname }}</td>
+                        <td class="small">{{ $inspection->getreport()->reportname ?? 'N/A'}}</td>
                         <td class="small">{{ $inspection->reportinspectorname()->iname }}</td>
                         <td class="small fw-semibold">{{ $inspection->getfarm()->farmname }}</td>
                         <td>
-                            @if ($inspection->getreport()->max_score == 0)
+                            @if ($inspection->getreport()->max_score ?? 0 == 0)
                                 <span class="badge bg-secondary">Check Report</span>
                             @else
                                 @php
