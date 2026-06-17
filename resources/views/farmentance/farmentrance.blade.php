@@ -101,11 +101,11 @@
                     
                 <div class="col-3 p-3">
                     <label for="nameofcrop" class="form-label">Name of Crop</label>
-                    <input type="text"  disabled name="nameofcrop" id="crop" class="form-control" value="{{$farmerdetail->crop}}"/>
+                    <input type="text"  readonly name="nameofcrop" id="crop" class="form-control" value="{{$farmerdetail->crop}}"/>
                 </div>
                 <div class="col-3 p-3">
                     <label for="varietyofcrop" class="form-label">Variety of Crop</label>
-                    <input type="text"  name="varietyofcrop" id="varietycrop" class="form-control" value="{{$farmerdetail->cropvariety}}"/>
+                    <input type="text"  readonly name="varietyofcrop" id="varietycrop" class="form-control" value="{{$farmerdetail->cropvariety}}"/>
                 </div> 
                                 <div class="col-3 p-3">
                     <label for="regdate" class="form-label">Reg Date</label>
