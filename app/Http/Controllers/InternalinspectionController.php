@@ -17,6 +17,7 @@ use App\Models\approvalcommitte;
 use App\Models\Season;
 use App\Services\InspectionApprovalService;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 
 class InternalinspectionController extends Controller
@@ -81,7 +82,8 @@ class InternalinspectionController extends Controller
 
         $inspections = internalinspection::where('inspectorid', $user->id)->get();
         $farms = farm::where('inspectorid', $user->id)
-            ->where('farmstate', '!=', 'DISABLED');
+            ->where('farmstate', '!=', 'DISABLED')
+            ->get();
         $reports = reports::where('reportstate', 'ACTIVE')->where('reportname', 'not like', '%Entrance%')->get();
         //dd($farms);
 
@@ -453,9 +455,8 @@ class InternalinspectionController extends Controller
         return view('inspection.inspection_view_sheet');
     }
 
-    public function summarypage(Request $request)
+    private function getSummaryInspections(Request $request)
     {
-
         $season = $request->season;
         $state = $request->reportstate;
         $reportname = reports::where('id', $request->report)->first();
@@ -465,8 +466,26 @@ class InternalinspectionController extends Controller
             $internalinspection = internalinspection::where('reportid', $request->report)->where('inspectionstate', $state)->where('season', $season)->get();
         }
 
+        return [$internalinspection, $season, $state, $reportname];
+    }
+
+    public function summarypage(Request $request)
+    {
+        [$internalinspection, $season, $state, $reportname] = $this->getSummaryInspections($request);
 
         return view('inspection.inspection_summary', compact('internalinspection', 'season', 'state', 'reportname'));
+    }
+
+    public function summarypdf(Request $request)
+    {
+        [$internalinspection, $season, $state, $reportname] = $this->getSummaryInspections($request);
+
+        $pdf = Pdf::loadView('pdf.inspectionsummarypdf', compact('internalinspection', 'season', 'state', 'reportname'))
+            ->setPaper('a4', 'landscape');
+
+        $pdfname = preg_replace('/\//', '_', $reportname->reportname . '_Summary_' . $season . '.pdf');
+
+        return $pdf->download($pdfname);
     }
 
     public function icancel(Request $request)

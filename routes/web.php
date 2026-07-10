@@ -105,7 +105,6 @@ Route::middleware('auth')->group(function () {
         Route::post('/farm/updatepicture',[FarmController::class, 'updatepicture'])->name('updatepicture');
         Route::get('/farm/disabled', [FarmController::class, 'disabled'])->name('disabled.farms');
         Route::post('/farm/reenable', [FarmController::class, 'reenable'])->name('farm.reenable');
-   
         
     });
     Route::middleware('auth')->group(function () {
@@ -178,6 +177,7 @@ Route::middleware('auth')->group(function () {
     Route::get('iapprove',[InternalinspectionController::class, 'iapprove'])->name('iapprove');
     Route::post('ireject',[InternalinspectionController::class, 'iapprove'])->name('ireject');
     Route::get('inspection/summary',[InternalinspectionController::class,'summarypage'])->name('summarypage');
+    Route::get('inspection/summary/pdf',[InternalinspectionController::class,'summarypdf'])->name('summarypdf');
     Route::post('inspection/cancel',[InternalinspectionController::class, 'icancel'])->name('icancel');
     Route::post('inspection/changedate',[InternalinspectionController::class, 'changedate'])->name('changedate');
 
