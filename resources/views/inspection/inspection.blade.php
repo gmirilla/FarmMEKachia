@@ -122,7 +122,7 @@
                     <td>
                         <div class="d-flex flex-wrap gap-1">
                             {{-- Continue button for PENDING/ACTIVE --}}
-                            @if (in_array($inspection->inspectionstate, ['PENDING','ACTIVE']))
+                            @if (in_array($inspection->inspectionstate, ['PENDING','ACTIVE','SUBMITTED']))
                                 <form action="{{ url('inspection/continue') }}" method="POST">
                                     @csrf
                                     <input type="hidden" value="{{ $inspection->id }}" name="farmid">
